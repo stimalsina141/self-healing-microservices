@@ -1,0 +1,102 @@
+name: self-healing-microservices
+services:
+  web:
+    build: .
+    init: true
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "--threads", "4", "lab.web:app"]
+    environment:
+      DATABASE_URL: postgresql://seminar:seminar@db:5432/seminar
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+      broker:
+        condition: service_started
+  cache:
+    build:
+      context: .
+      dockerfile: lab/cache.Dockerfile
+    cap_add: [NET_ADMIN]
+  broker:
+    image: redis:7.4-alpine
+  worker:
+    build:
+      context: .
+      dockerfile: lab/worker.Dockerfile
+    init: true
+    mem_limit: 256m
+    memswap_limit: 256m
+    depends_on: [broker]
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: seminar
+      POSTGRES_USER: seminar
+      POSTGRES_PASSWORD: seminar
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./lab/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seminar -d seminar"]
+      interval: 3s
+      timeout: 2s
+      retries: 15
+  controller:
+    build: .
+    init: true
+    command: ["python", "-m", "lab.controller"]
+    environment:
+      COMPOSE_PROJECT: self-healing-microservices
+      DATABASE_URL: postgresql://seminar:seminar@db:5432/seminar
+    ports:
+      - "127.0.0.1:8088:8088"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${LAB_DATA_DIR:-./data}:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8088/trials/active', timeout=2).close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/rules.yml:/etc/prometheus/rules.yml:ro
+      - prometheus:/prometheus
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    ports:
+      - "127.0.0.1:9093:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+  grafana:
+    image: grafana/grafana:12.1.1
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana:/var/lib/grafana
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.60.6
+    command: ["--enable_metrics=cpu,memory,network", "--containerd=/rootfs/run/containerd/containerd.sock"]
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+
+volumes:
+  postgres:
+  prometheus:
+  grafana:

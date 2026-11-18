@@ -1,0 +1,16 @@
+{
+  "host_architecture": "arm64",
+  "host_macos_version": "26.6.2",
+  "docker_compose": "5.3.1",
+  "docker_linux": {
+    "version": "29.6.2",
+    "kernel": "6.12.76-linuxkit",
+    "architecture": "aarch64",
+    "cpus": 8,
+    "memory_bytes": 4108632064,
+    "storage_driver": "overlayfs",
+    "cgroup_version": "2"
+  },
+  "prometheus_scrape_seconds": 15,
+  "prometheus_evaluation_seconds": 15
+}

@@ -1,0 +1,18 @@
+groups:
+  - name: service-health
+    rules:
+      - alert: ServiceDown
+        expr: lab_service_up == 0
+        for: 10s
+        annotations:
+          summary: "{{ $labels.service }} is unavailable"
+      - alert: HighMemory
+        expr: lab_container_memory_ratio > 0.90
+        for: 15s
+        annotations:
+          summary: "{{ $labels.service }} exceeds 90% of its memory limit"
+      - alert: HighLatency
+        expr: lab_cache_probe_duration_seconds > 0.15
+        for: 30s
+        annotations:
+          summary: "{{ $labels.service }} exceeds the 150 ms Redis probe threshold"

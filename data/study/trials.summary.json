@@ -1,0 +1,81 @@
+{
+  "groups": [
+    {
+      "fault_type": "container-crash",
+      "method": "manual",
+      "recorded": 10,
+      "recovered": 10,
+      "other": 0,
+      "mean_sec": 68.366,
+      "median_sec": 69.382,
+      "sample_sd_sec": 5.477
+    },
+    {
+      "fault_type": "container-crash",
+      "method": "automated",
+      "recorded": 10,
+      "recovered": 10,
+      "other": 0,
+      "mean_sec": 54.191,
+      "median_sec": 52.667,
+      "sample_sd_sec": 4.77
+    },
+    {
+      "fault_type": "network-slowdown",
+      "method": "manual",
+      "recorded": 10,
+      "recovered": 10,
+      "other": 0,
+      "mean_sec": 85.076,
+      "median_sec": 85.334,
+      "sample_sd_sec": 3.518
+    },
+    {
+      "fault_type": "network-slowdown",
+      "method": "automated",
+      "recorded": 10,
+      "recovered": 10,
+      "other": 0,
+      "mean_sec": 70.697,
+      "median_sec": 71.231,
+      "sample_sd_sec": 3.895
+    },
+    {
+      "fault_type": "memory-exhaustion",
+      "method": "manual",
+      "recorded": 10,
+      "recovered": 10,
+      "other": 0,
+      "mean_sec": 70.04,
+      "median_sec": 67.969,
+      "sample_sd_sec": 4.428
+    },
+    {
+      "fault_type": "memory-exhaustion",
+      "method": "automated",
+      "recorded": 10,
+      "recovered": 10,
+      "other": 0,
+      "mean_sec": 57.42,
+      "median_sec": 58.575,
+      "sample_sd_sec": 5.985
+    }
+  ],
+  "comparisons": [
+    {
+      "fault_type": "container-crash",
+      "mean_reduction_sec": 14.175,
+      "mean_reduction_pct": 20.73
+    },
+    {
+      "fault_type": "network-slowdown",
+      "mean_reduction_sec": 14.379,
+      "mean_reduction_pct": 16.9
+    },
+    {
+      "fault_type": "memory-exhaustion",
+      "mean_reduction_sec": 12.62,
+      "mean_reduction_pct": 18.02
+    }
+  ]
+}
