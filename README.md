@@ -2,6 +2,8 @@
 
 This project measures how automated detection and remediation affect mean time to recovery (MTTR) in a small Docker Compose system. The experiment compares automated recovery with a scripted operator.
 
+For a walkthrough with expected outputs and screenshot instructions, see the [peer reproduction guide](REPRODUCE.md).
+
 ## Start the lab
 
 Use Docker Desktop or a Linux Docker Engine with Compose v2, cgroup v2, and kernel support for `tc netem`. The experiment CLI uses Python 3.10+ and the standard library. Start Docker before running these commands.
